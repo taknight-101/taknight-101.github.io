@@ -2,8 +2,10 @@
 layout: post
 title: "A Guide To Achieve Centralized & Automated UpdateSets Workflows"
 permalink: "updateset"
-categories: [Platform Engineering, ServiceNow]
+categories: [Platform Engineering, ServiceNow , nesting]
 tags: ["r&d" , "python" , "js" , "scripted_rest_apis" , "webhooks" , "reverse_engineering", "automation"]    # TAG names should always be lowercase
+image: /images/updateSets/updateSets.jpg
+
 
 ---
 
