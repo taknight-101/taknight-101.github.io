@@ -34,8 +34,8 @@ url: https://taknight-101.github.io
 github:
   username: taknight-101 # change to your github username
 
-twitter:
-  username: slash10_01_neee # change to your twitter username
+# twitter:
+#   username:  # change to your twitter username
 
 social:
   # Change to your full name.
@@ -44,18 +44,18 @@ social:
   email: ahmed.ibrahim.1sep1997@gmail.com  # change to your email address
   links:
     # The first element serves as the copyright owner's link
-    - https://twitter.com/slash10_01_neee # change to your twitter homepage
+    # - https://twitter.com/ # change to your twitter homepage
     - https://github.com/taknight-101 # change to your github homepage
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
-    # - https://www.linkedin.com/in/username
+    - https://www.linkedin.com/in/ahmed-ibrahim-29a412167/
 
-google_site_verification: google_meta_tag_verification # change to your verification string
+# google_site_verification: google_meta_tag_verification # change to your verification string
 
 # ↑ --------------------------
 
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
-google_analytics: G-XNJK63CK6E
+# google_analytics: G-XNJK63CK6E
 
 # Prefer color scheme setting.
 #
