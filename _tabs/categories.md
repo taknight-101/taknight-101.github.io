@@ -2,5 +2,5 @@
 layout: categories
 title: Categories
 icon: fas fa-stream
-order: 5
+order: 1
 ---

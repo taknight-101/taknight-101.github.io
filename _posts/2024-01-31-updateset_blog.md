@@ -182,17 +182,20 @@ def get_sys_id(table  = "sys_remote_update_set", field_name = "name" , field_va
     return response.all()[0]['sys_id']
 ```
 
-{{< notice "note" >}}
-  Note that we used the `sys_remote_update_set` table as we mentioned above and not `sys_update_set`
-{{< /notice >}}
+
+> Note that we used the `sys_remote_update_set` table as we mentioned above and not `sys_update_set`
+{: .prompt-tip }
+
+
 
 so we have our target updateset sys_id
 and we get the cookies easily as follows: 
 `cookie_dict = c.session.cookies.get_dict()`
 
-{{< notice "tip" >}}
-  `Spoiler Alert`: we won't need this `cookie_dict` in the end
-{{< /notice >}}
+
+>  Spoiler Alert: we won't need this `cookie_dict` in the end
+{: .prompt-tip }
+
 
 and we got the headers from burp as follows: 
 

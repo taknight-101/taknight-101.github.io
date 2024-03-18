@@ -20,9 +20,9 @@ timezone: America/New_York
 
 title: Ahmed Ibrahim # the main title
 
-tagline: Personal Blogging site for all i find interesting # it will display as the sub-title
+tagline: Software Engineer # it will display as the sub-title
 
-description: Personal Blogging site for all i find interesting 
+description: Software Engineer 
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
 avatar: https://avatars.githubusercontent.com/u/95128895?v=4

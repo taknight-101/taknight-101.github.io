@@ -4,7 +4,7 @@ title: "Servicenow REST-API based Automation"
 permalink: "restapi-automation"
 categories: [Platform Engineering, ServiceNow]
 tags:  ["automation", "python", "hacks", "developer_productivity"]  # TAG names should always be lowercase
-image: /images/hacks/hack1/hack1.jpg
+# image: /images/hacks/hack1/hack1.jpg
 
 
 ---

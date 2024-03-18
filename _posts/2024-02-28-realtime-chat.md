@@ -301,10 +301,8 @@ the final step which is binding the resolvers to the schema types as seen below
 
 
 
-{{< notice "note" >}}
-note that the resolver `Get User` is used many times to resolve fields of the same field type in different places 
-{{< /notice >}}
-
+> Note that the resolver `Get User` is used many times to resolve fields of the same field type in different places 
+{: .prompt-tip }
 
 now, how to consume these apis from ui builder, the frontend of our application? 
 
@@ -400,9 +398,9 @@ function evaluateProperty({
 ```
 
 
-{{< notice "note" >}}
- note that there are many ways to implement authorization in servicenow, ACLs are just one way , the above method of using logged in sys_ids and comparing them to other sys_ids is a another programmatic approach, choose what it best fits the problem at hand
-{{< /notice >}}
+> Note that there are many ways to implement authorization in servicenow, ACLs are just one way , the above method of using logged in sys_ids and comparing them to other sys_ids is a another programmatic approach, choose what it best fits the problem at hand
+{: .prompt-tip }
+
 
 
 ---
@@ -602,9 +600,10 @@ function handler({
 ```
 
 
-{{< notice "note" >}}
-  note that we implemented authorization here programmatically again to make sure we don't broadcast messages to rooms they don't belong to, these lines in the below code do the trick 
-{{< /notice >}}
+
+> Note that we implemented authorization here programmatically again to make sure we don't broadcast messages to rooms they don't belong to, these lines in the below code do the trick 
+{: .prompt-tip }
+
 
 
 
