@@ -150,36 +150,31 @@ The following code does the mentioned job
 
 
 ```python 
-import pysnow  
+import pysnow
 
-c = pysnow.Client(instance='', user='admin', password='')
+c = pysnow.Client(instance="", user="admin", password="")
 
 
-def get_sys_id(table  = "sys_remote_update_set", field_name = "name" , field_value = "Training and Certification Management"):  
+def get_sys_id(
+    table="sys_remote_update_set",
+    field_name="name",
+    field_value="Training and Certification Management",
+):
 
-  
-    qb = (
+    qb = (
+        pysnow.QueryBuilder()
+        .field(field_name)
+        .equals(field_value)
+        .AND()
+        .field("state")
+        .equals("loaded")
+    )
 
-        pysnow.QueryBuilder()
+    callers = c.resource(api_path=f"/table/{table}")
 
-        .field(field_name).equals(field_value)
+    response = callers.get(query=qb)
 
-        .AND()
-
-        .field("state").equals("loaded")
-
-  
-
-    )
-
-  
-    callers = c.resource(api_path=f'/table/{table}')
-
-    response = callers.get(query=qb)
-
-  
-
-    return response.all()[0]['sys_id']
+    return response.all()[0]["sys_id"]
 ```
 
 
@@ -201,36 +196,22 @@ and we got the headers from burp as follows:
 
 ```python 
 headers = {
-
-    'Host': {protocolless_instance_url},
-
-    'Sec-Ch-Ua': '\"Chromium\";v=\"109\", \"Not_A Brand\";v=\"99\"',
-
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-
-    'Sec-Ch-Ua-Mobile': '?0',
-
-    'Upgrade-Insecure-Requests': '1',
-
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.120 Safari/537.36',
-
-    'Sec-Ch-Ua-Platform': '\"Windows\"',
-
-    'Sec-Fetch-Site': 'same-origin',
-
-    'Sec-Fetch-Mode': 'navigate',
-
-    'Sec-Fetch-Dest': 'empty',
-
-    'Referer': 'https://dev146231.service-now.com/sys_remote_update_set.do?sys_id={target_updateSet}',
-
-    'Accept-Encoding': 'gzip, deflate',
-
-    'Accept-Language': 'en-US,en;q=0.9',
-
-    'Connection': 'close'
-
+    "Host": {protocolless_instance_url},
+    "Sec-Ch-Ua": '"Chromium";v="109", "Not_A Brand";v="99"',
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.120 Safari/537.36",
+    "Sec-Ch-Ua-Platform": '"Windows"',
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Dest": "empty",
+    "Referer": "https://dev146231.service-now.com/sys_remote_update_set.do?sys_id={target_updateSet}",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Connection": "close",
 }
+
 ```
 
 
@@ -264,38 +245,26 @@ So, after digging deeper we come across a great feature in servicenow called `Sc
 
 
 ```js
-(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+  // implement resource here
 
+  var result = {
+    message: "Here is your token!",
 
-    // implement resource here  
+    data: {
+      token: gs.getSession().getSessionToken(),
 
-    var result = {
+      currentApp: gs.getSession().getCurrentApplicationId(),
 
-        message: 'Here is your token!',
+      isInteractive: gs.getSession().isInteractive(),
 
-        data: {
+      isLoggedIn: gs.getSession().isLoggedIn(),
+    },
+  };
 
-            token: gs.getSession().getSessionToken(),
+  response.setContentType("application/json");
 
-            currentApp: gs.getSession().getCurrentApplicationId(),
-
-            isInteractive: gs.getSession().isInteractive(),
-
-            isLoggedIn: gs.getSession().isLoggedIn()
-
-        }
-
-    };
-
-  
-
-    response.setContentType('application/json');
-
-    response.setBody(result);
-
-  
-  
-
+  response.setBody(result);
 })(request, response);
 
 
@@ -306,11 +275,9 @@ As you saw, we can extract some other useful data outside the platform, so let's
 now we call the RPC from our python script as follows: 
 
 ```python 
-  
-
 # Make a POST request to the Scripted REST API
 
-response = requests.post(f'{base_url}{api_path}', auth=auth)
+response = requests.post(f"{base_url}{api_path}", auth=auth)
 
 
 token = None
@@ -319,35 +286,30 @@ token = None
 
 if response.status_code == 200:
 
-    response_data = response.json()
+    response_data = response.json()
 
-    print('rpc output' , response_data)
+    print("rpc output", response_data)
 
-    token =   response_data['result']['data']['token']    
+    token = response_data["result"]["data"]["token"]
 
 
 else:
 
-    print(f'Request failed. Status code: {response.status_code}')
+    print(f"Request failed. Status code: {response.status_code}")
 
-    print(response.text)
+    print(response.text)
 
-  
 
 sysid = get_sys_id()
 
 # Construct and make the POST request
 
-url = f'{base_url}/export_update_set.do'
+url = f"{base_url}/export_update_set.do"
 
 parameters = {
-
-    'sysparm_sys_id': str(sysid),
-
-    'sysparm_is_remote': 'false',
-
-    'sysparm_ck': str(token)
-
+    "sysparm_sys_id": str(sysid),
+    "sysparm_is_remote": "false",
+    "sysparm_ck": str(token),
 }
 
 ```
@@ -356,28 +318,25 @@ parameters = {
 now we also have the request parameters and we are ready to go ✌️ 
 
 ```python 
-
-  
-response = requests.get(url, params=parameters ,headers=headers )
+response = requests.get(url, params=parameters, headers=headers)
 
 # Check if the request was successful
 
 if response.status_code == 200:
 
-    # Save the XML content to a local file
+    # Save the XML content to a local file
 
-    with open('updateSet.xml', 'wb') as file:
+    with open("updateSet.xml", "wb") as file:
 
-        file.write(response.content)
+        file.write(response.content)
 
-    print('Export successful! Response XML saved to response.xml.')
+    print("Export successful! Response XML saved to response.xml.")
 
 else:
 
-    print(f'Request failed. Status code: {response.status_code}')
+    print(f"Request failed. Status code: {response.status_code}")
 
-    print(response.text)
-    
+    print(response.text)
 ```
 
 
@@ -386,39 +345,38 @@ If you have been following along thus far, and you ran the script, it will actua
 The `fix` for this issue is simple but can be easily overlooked, as you recall that http requests are stateless, namely each request has zero knowledge of the previous request , and that's exactly what we have been doing this far in our script by continuously calling  `requests.get()` , `requests.post()` which each initiates a request-response flow from scratch which messes up the session and cookies data we need to have retained across our entire request-response flow, so we fix this by making use of the already established session that got created by the `pysnow` module and following up we dispatch requests on that session object exactly like we did with `requests` as follows: 
 
 ```python 
+c = pysnow.Client(instance="", user="admin", password="")
 
-c = pysnow.Client(instance='', user='admin', password='')
-
-session =  c.session
+session = c.session
 
 
 # Make a POST request to the Scripted REST API
-response = session.post(f'{base_url}{api_path}', auth=auth)
+response = session.post(f"{base_url}{api_path}", auth=auth)
+
 ```
 
 And now, we finally can run our script and get a successful exported update_set saved to our current directory, congratulations! 👏
 
 ```python 
+response = session.get(url, params=parameters, headers=headers)
 
-response = session.get(url, params=parameters ,headers=headers )
 
-  
 # Check if the request was successful
 if response.status_code == 200:
 
-    # Save the XML content to a local file
-    with open('updateSet.xml', 'wb') as file:
+    # Save the XML content to a local file
+    with open("updateSet.xml", "wb") as file:
 
-        file.write(response.content)
+        file.write(response.content)
 
-    print('Export successful! Response XML saved to response.xml.')
+    print("Export successful! Response XML saved to response.xml.")
 
 else:
 
-    print(f'Request failed. Status code: {response.status_code}')
+    print(f"Request failed. Status code: {response.status_code}")
 
-    print(response.text)
-    
+    print(response.text)
+
 
 ```
 
@@ -439,14 +397,13 @@ this web hook is a `push webhook` which we chose to trigger on each & every repo
 to trigger this push, we authored the following python script to automate the pushing process neatly and efficiently, you only need to provide a `.env` file with the following configuration 
 
 ```python
-GITLAB_REPO_URL=""  
+GITLAB_REPO_URL=""
 GITLAB_ACCESS_TOKEN=""
 ```
 
 and then simply run the following script which automatically detects new changes to the repo and pushes them to the configured repo 
 
 ```python 
-
 import os
 import subprocess
 
@@ -473,34 +430,28 @@ os.chdir(folder_path)
 
 
 # Check if the repository is already initialized
-if subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], capture_output=True).stdout.strip():
+if subprocess.run(
+    ["git", "rev-parse", "--is-inside-work-tree"], capture_output=True
+).stdout.strip():
 
-    # Repository already initialized, pull changes
-    subprocess.run(["git", "pull"])
+    # Repository already initialized, pull changes
+    subprocess.run(["git", "pull"])
 
 else:
-    # Initialize a new Git repository
-    subprocess.run(["git", "init"])
+    # Initialize a new Git repository
+    subprocess.run(["git", "init"])
 
-  
+    # Set the GitLab repository URL as the remote origin
+    subprocess.run(["git", "remote", "add", "origin", repo_url])
+    # Add all files to the repository
+    subprocess.run(["git", "add", "."])
+    # Commit the changes
+    subprocess.run(["git", "commit", "-m", "Automated: New updateSet.xml push commit"])
 
-    # Set the GitLab repository URL as the remote origin
-    subprocess.run(["git", "remote", "add", "origin", repo_url])
-
-  
-
-    # Add all files to the repository
-	  subprocess.run(["git", "add", "."])
-
-  
-    # Commit the changes
-
-	  subprocess.run(["git", "commit", "-m", "Automated: New updateSet.xml push commit"])
-
-  
 
 # Push the changes to the GitLab repository
-subprocess.run(["git", "push" , "-u", "origin", "main" ])
+subprocess.run(["git", "push", "-u", "origin", "main"])
+
 ```
 
 after this script is run, and the updateset is pushed to the repo, the webhook is dispatched with a POST request to the configured servicenow instance url , giving in its body information about the repo commits including what files are added or modified and their download url, we use this information later on the servicenow part of the webhook to create incidents inside the platform via a scripted rest api as the second time of using, refer to this [Docs](https://www.servicenow.com/community/in-other-news/how-to-integrate-webhooks-into-servicenow/ba-p/2271745) for more details
@@ -514,121 +465,85 @@ We create the 2nd scripted rest api with a post resource to bind to the configur
 
 ```js
 
-(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+  // implement resource here
 
+  var requestBody = request.body.data;
 
-    // implement resource here
+  var added = requestBody.commits.map(function (commit) {
+    if (commit.added.length == 0) return;
 
-    var requestBody = request.body.data;
+    var download_url =
+      commit.url.split("-")[0] +
+      "-/raw/main/" +
+      commit.added +
+      "?ref_type=heads&inline=false";
 
+    return "Added: " + commit.added + " .To download: " + download_url;
+  });
 
-    var added = requestBody.commits.map(function(commit) {
+  var modified = requestBody.commits.map(function (commit) {
+    if (commit.modified.length == 0) return;
 
-        if (commit.added.length == 0) return
+    var download_url =
+      commit.url.split("-")[0] +
+      "-/raw/main/" +
+      commit.modified +
+      "?ref_type=heads&inline=false";
 
-        var download_url = commit.url.split('-')[0] + '-/raw/main/' + commit.added + '?ref_type=heads&inline=false';
+    return "Modified: " + commit.modified + " .To download: " + download_url;
+  });
 
+  var commitActions = Array.prototype.concat.apply([], [added, modified]);
 
-        return "Added: " + commit.added + " .To download: " + download_url;
+  function insertRecordsWithReferences(tableName, numRecords, fieldsAndValues) {
+    var gr = new GlideRecord(tableName);
 
-    });
+    for (var i = 0; i < numRecords; i++) {
+      gr.initialize();
 
-  
+      // Set field values based on the input object
 
-    var modified = requestBody.commits.map(function(commit) {
+      for (var field in fieldsAndValues) {
+        if (fieldsAndValues.hasOwnProperty(field)) {
+          var value = fieldsAndValues[field];
 
-        if (commit.modified.length == 0) return
+          // Check if the field is a reference type
 
-        var download_url = commit.url.split('-')[0] + '-/raw/main/' + commit.modified + '?ref_type=heads&inline=false';
+          if (
+            JSON.stringify(gr[field].getED().getInternalType()) ===
+            '"reference"'
+          ) {
+            var referenceGR = new GlideRecord(value.table);
 
+            if (referenceGR.get(value.sysId)) {
+              gr[field] = referenceGR.sys_id;
+            }
+          } else {
+            gr.setValue(field, value);
+          }
+        }
+      }
 
+      gr.insert();
+    }
+  }
 
-        return "Modified: " + commit.modified + " .To download: " + download_url;
+  var tableName = "incident";
 
-    });
+  var numRecords = 1;
 
-  
+  var fieldsAndValues = {
+    short_description: "New updateSet event!",
 
-    var commitActions = Array.prototype.concat.apply([], [added, modified]);
+    description: commitActions.join("\n\n"),
 
+    priority: 1,
+  };
 
-
-    function insertRecordsWithReferences(tableName, numRecords, fieldsAndValues) {
-
-        var gr = new GlideRecord(tableName);
-
-  
-
-        for (var i = 0; i < numRecords; i++) {
-
-            gr.initialize();
-
-
-            // Set field values based on the input object
-
-            for (var field in fieldsAndValues) {
-
-                if (fieldsAndValues.hasOwnProperty(field)) {
-
-                    var value = fieldsAndValues[field];
-
-  
-
-                    // Check if the field is a reference type
-
-                    if (JSON.stringify(gr[field].getED().getInternalType()) === '"reference"') {
-
-  
-
-                        var referenceGR = new GlideRecord(value.table);
-
-                        if (referenceGR.get(value.sysId)) {
-
-                            gr[field] = referenceGR.sys_id;
-
-                        }
-
-                    } else {
-
-                        gr.setValue(field, value);
-
-                    }
-
-                }
-
-            }
-
-  
-
-            gr.insert();
-
-        }
-
-    }
-
-  
-  
-
-    var tableName = 'incident';
-
-    var numRecords = 1;
-
-    var fieldsAndValues = {
-
-        short_description:"New updateSet event!",
-
-        description: commitActions.join('\n\n'),
-
-        priority: 1,
-
-
-    };  
-
-    insertRecordsWithReferences(tableName, numRecords, fieldsAndValues);
-
-  
-
+  insertRecordsWithReferences(tableName, numRecords, fieldsAndValues);
 })(request, response);
+
 ```
 
 

@@ -12,16 +12,18 @@ image: /images/realtime/realtime.jpg
 
 
 
-## _In this blog, We are going to build a real time chat application from start to finish_
+## Intro 
+
+_In this blog, We are going to build a real time chat application from start to finish_
 
 
 I had some goals in mind that i wanted to tackle regarding why to implement such application, so i will list them first and foremost 
 
 
 Basically i wanted to:
-###### 1. Write a blog about using graphql apis in ServiceNow 
-###### 2. Research the possibility of using reactive features inside ServiceNow for possible use cases and scenarios
-###### 3. Methodize a development process for me and my awesome team for future project engagements employing systems thinking and agile principles based off my personal view which has been forming since my first interaction with the ServiceNow platform , so this blog - and all other blogs of which i'm the author - are totally subjective and can be further improved and optimized for different scenarios, so without further ado ,let's begin the technical talk 
+1. Write a blog about using graphql apis in ServiceNow 
+2. Research the possibility of using reactive features inside ServiceNow for possible use cases and scenarios
+3. Methodize a development process for me and my awesome team for future project engagements employing systems thinking and agile principles based off my personal view which has been forming since my first interaction with the ServiceNow platform , so this blog - and all other blogs of which i'm the author - are totally subjective and can be further improved and optimized for different scenarios, so without further ado ,let's begin the technical talk 
 
 ---
 
@@ -54,6 +56,9 @@ which you configure to listen to updates to any tables you wish and be notified 
 
 ---
 
+## Implementation
+
+
 > As mentioned at the beginning of this blog, one of the goals of writing this blog is to methodize the development process of applications in servicenow , but i think it would be better to strip this part into a future dedicated blog to keep track and emphasis on the subtle difference between process management and its concrete implementation, also to keep this blog focused and not too long to read, so let's proceed 
 
 
@@ -62,11 +67,11 @@ We start by navigating to `app engine studio` for faster application bootstrappi
 Regarding Data modelling of chat apps => one could come up with various design choices with informed justifications , but in our case, we chose 2 tables only to represent our app , and let's pause for a moment and mention briefly the application features to set the scope early in our discussion 
 
 
-> * The app features 2 data concepts, chat rooms, and chat messages
+* The app features 2 data concepts, chat rooms, and chat messages
 
-> * Admin user only creates chat rooms and manage the assignment of members to different rooms for them to chat in
+* Admin user only creates chat rooms and manage the assignment of members to different rooms for them to chat in
 
-> * Users only see their assigned rooms and nothing else 
+* Users only see their assigned rooms and nothing else 
 
 and that's it, simple and enough for our purposes
 
@@ -127,6 +132,9 @@ as seen above, the structure is simple, the rooms are represented as boxes and b
 
 
 now, how are these data fetched from the tables?
+
+
+## graphql
 
 The answer to this question follows the 1st goal in this blog which is using graphql APIs to fetch backend data. 
 
@@ -229,34 +237,20 @@ This tool provides an easy to use interface to test graphql operations from with
 these are the actual server apis implementation to resolve the query the client requests, we created 3 resolvers in the app as we have 3 types to fulfill their data , we describe one of them now and the rest are similar 
 
 ```js
-(function process( /*ResolverEnvironment*/ env) {
+(function process(/*ResolverEnvironment*/ env) {
+  // implement data resolver here
 
-  
+  var sysId = env.getArguments().id || env.getSource();
 
-    // implement data resolver here
+  var sysIdList = sysId.split(",");
 
-  
+  var gr = new GlideRecordSecure("sys_user");
 
-    var sysId = env.getArguments().id || env.getSource();
+  gr.addQuery("sys_id", "IN", sysIdList); // Use 'IN' operator to match multiple sys_ids
 
-  
-  
+  gr.query();
 
-    var sysIdList = sysId.split(',');
-
-    var gr = new GlideRecordSecure('sys_user');
-
-    gr.addQuery('sys_id', 'IN', sysIdList); // Use 'IN' operator to match multiple sys_ids
-
-    gr.query();
-
-  
-  
-
-    return gr;
-
-  
-
+  return gr;
 })(env);
 
 ```
@@ -278,11 +272,11 @@ type User {
 The column names defined from the user table use the `@source` directive to bind to the specific values , we note that the `manager` field is a reference field to the user table in itself , and for that we slickly use the same resolver to resolve that field , also the `env.getSource()` and the lines below
 
 ```js
- var sysIdList = sysId.split(',');
+var sysIdList = sysId.split(',');
 
-    var gr = new GlideRecordSecure('sys_user');
+var gr = new GlideRecordSecure('sys_user');
 
-    gr.addQuery('sys_id', 'IN', sysIdList);
+gr.addQuery('sys_id', 'IN', sysIdList);
 ```
 
 allows for `1:many` type resolution for fields such as `members` in the `rooms` table.
@@ -327,74 +321,39 @@ in our example we used a repeater to render the rooms that are accessible to the
 ```js
 /**
 
- * @param {params} params
+ * @param {params} params
 
- * @param {api} params.api
+ * @param {api} params.api
 
- * @param {TransformApiHelpers} params.helpers
+ * @param {TransformApiHelpers} params.helpers
 
- */
+ */
 
-  
-  
+function evaluateProperty({
+  api,
 
-function evaluateProperty({
+  helpers,
+}) {
+  let rooms =
+    api.data.chatsgraphqlapi_1.output.data.x982379ChatAp0.chat.getRooms;
 
-    api,
+  let my_rooms = [];
 
-    helpers
+  if (api.context.session.user.userName === "admin") {
+    return rooms;
+  }
 
-}) {
+  rooms.forEach((r) => {
+    r.members.forEach((m) => {
+      if (m.id === api.context.session.user.sys_id) {
+        my_rooms.push(r);
+      }
+    });
+  });
 
-  
-
-    let rooms = api.data.chatsgraphqlapi_1.output.data.x982379ChatAp0.chat.getRooms;
-
-  
-
-    let my_rooms = []
-
-  
-  
-    if (api.context.session.user.userName === "admin") {
-
-        return rooms;
-
-  
-
-    }
-
-  
-  
-  
-
-    rooms.forEach(r => {
-
-  
-
-        r.members.forEach(m => {
-
-            if (m.id === api.context.session.user.sys_id) {
-
-                my_rooms.push(r)
-
-            }
-
-  
-  
-
-        })
-
-    });
-
-  
-  
-  
-  
-
-    return my_rooms;
-
+  return my_rooms;
 }
+
 ```
 
 
@@ -405,7 +364,9 @@ function evaluateProperty({
 
 ---
 
-now , back again to our 2nd goal in this blog with the 2nd page in which we use AMB to achieve realtime chatting 
+## Realtime with AMB
+
+now, back again to our 2nd goal in this blog with the 2nd page in which we use AMB to achieve realtime chatting 
 
 as seen below , the page is again simple and concise 
 
@@ -490,111 +451,81 @@ Following is the code invoked after the amb event is emitted
 ```js
 /**
 
- * @param {params} params
+ * @param {params} params
 
- * @param {api} params.api
+ * @param {api} params.api
 
- * @param {any} params.event
+ * @param {any} params.event
 
- * @param {any} params.imports
+ * @param {any} params.imports
 
- * @param {ApiHelpers} params.helpers
+ * @param {ApiHelpers} params.helpers
 
- */
+ */
 
-function handler({
+function handler({
+  api,
 
-    api,
+  event,
 
-    event,
+  helpers,
 
-    helpers,
+  imports,
+}) {
+  let record = event.payload.data.record;
 
-    imports
+  let body = record.body.value;
 
-}) {
+  let created_by = record.sys_created_by.value;
 
+  let at_time = record.sys_updated_on.value;
 
-  
+  let room_id = record.room_id.value;
 
-    let record = event.payload.data.record;
+  let is_current_room = room_id === api.context.props.sysId;
 
-    let body = record.body.value
+  if (!is_current_room) {
+    return;
+  }
 
-    let created_by = record.sys_created_by.value
+  var date = new Date(at_time);
 
-    let at_time = record.sys_updated_on.value
+  // Define formatting options
 
-    let room_id = record.room_id.value
+  var options = {
+    year: "numeric",
 
-  
+    month: "long",
 
-    let is_current_room = room_id === api.context.props.sysId
+    day: "2-digit",
 
-  
+    hour: "2-digit",
 
-    if (!is_current_room) {
+    minute: "2-digit",
 
-        return
+    second: "2-digit",
 
-    }
+    hour12: true, // Set to true to display in AM/PM format
+  };
 
-  
+  // Format the date
 
-    var date = new Date(at_time);
+  var formattedDate = date.toLocaleString("en-US", options);
 
-  
+  let newMessages = [
+    ...JSON.parse(api.state.messages || "[]"),
+    {
+      message: body,
 
-    // Define formatting options
+      from: created_by,
 
-    var options = {
+      time: formattedDate,
 
-        year: 'numeric',
+      room_id: api.context.props.sysId,
+    },
+  ];
 
-        month: 'long',
-
-        day: '2-digit',
-
-        hour: '2-digit',
-
-        minute: '2-digit',
-
-        second: '2-digit',
-
-        hour12: true // Set to true to display in AM/PM format
-
-    };
-
-  
-
-    // Format the date
-
-    var formattedDate = date.toLocaleString('en-US', options);
-
-  
-  
-
-    let newMessages = [...JSON.parse(api.state.messages || '[]'),  {
-
-        'message': body,
-
-        'from': created_by,
-
-        'time': formattedDate,
-
-        'room_id': api.context.props.sysId
-
-    }]
-
-  
-  
-
-    api.setState('messages', JSON.stringify(newMessages));
-
-  
-  
-  
-
+  api.setState("messages", JSON.stringify(newMessages));
 }
 
 ```
@@ -608,17 +539,11 @@ function handler({
 
 
 ```js
+let is_current_room = room_id === api.context.props.sysId;
 
-   let is_current_room = room_id === api.context.props.sysId
-
-  
-
-    if (!is_current_room) {
-
-        return
-
-    }
-
+if (!is_current_room) {
+  return;
+}
 
 ```
 
@@ -629,7 +554,6 @@ No hard feelings for you REST APIs authors out there :) Software Engineering is 
 
 
 ```js
-
 /**
 
  * @param {params} params
@@ -644,115 +568,68 @@ No hard feelings for you REST APIs authors out there :) Software Engineering is 
 
  */
 
-function handler({
+function handler({
+  api,
 
-    api,
+  event,
 
-    event,
+  helpers,
 
-    helpers,
+  imports,
+}) {
+  let newMessages = [...JSON.parse(api.state.messages || "[]")];
 
-    imports
+  let body = api.data.look_up_records_1.results.forEach((record) => {
+    if (api.context.props.sysId === record.room_id.value) {
+      api.setState("current_room", record.room_id._reference.name.value);
+    }
 
-}) {
+    let body = record.body.value;
 
-  
+    let created_by = record.sys_created_by.value;
 
-    let newMessages = [...JSON.parse(api.state.messages || '[]')]
+    let at_time = record.sys_updated_on.value;
 
-  
-  
+    newMessages.push({
+      message: body,
 
-    let body = api.data.look_up_records_1.results.forEach(record => {
+      from: created_by,
 
+      time: formatDate(at_time),
+    });
+  });
 
+  function formatDate(time) {
+    var date = new Date(time); // Define formatting options
 
-        if(api.context.props.sysId === record.room_id.value){
+    var options = {
+      year: "numeric",
 
-                api.setState('current_room' ,record.room_id._reference.name.value )
+      month: "long",
 
-        }
+      day: "2-digit",
 
-  
-  
+      hour: "2-digit",
 
-        let body = record.body.value
+      minute: "2-digit",
 
-        let created_by = record.sys_created_by.value
+      second: "2-digit",
 
-        let at_time = record.sys_updated_on.value
+      hour12: true, // Set to true to display in AM/PM format
+    }; // Format the date
 
-  
+    return date.toLocaleString("en-US", options);
+  }
 
-        newMessages.push({
-
-            'message': body,
-
-            'from': created_by,
-
-            'time': formatDate(at_time)
-
-  
-
-        })
-
-  
-
-    })
-
-  
-
-    function formatDate(time) {
-
-        var date = new Date(time);
-
-  
-
-        // Define formatting options
-
-        var options = {
-
-            year: 'numeric',
-
-            month: 'long',
-
-            day: '2-digit',
-
-            hour: '2-digit',
-
-            minute: '2-digit',
-
-            second: '2-digit',
-
-            hour12: true // Set to true to display in AM/PM format
-
-        };
-
-  
-
-        // Format the date
-
-        return date.toLocaleString('en-US', options);
-
-  
-
-    }
-
-  
-
-    api.setState('messages', JSON.stringify(newMessages));
-
-  
-  
-  
-
+  api.setState("messages", JSON.stringify(newMessages));
 }
+
 
 ```
 
 ---
 
-### 2 Short Demos Of The Final App
+## 2 Short Demos Of The Final App
 
 
 ![]({{ site.baseurl }}/images/realtime/demo.gif)
@@ -764,11 +641,13 @@ function handler({
 
 ---
 
-##### And that's all. Thank you all for reaching this far, and hope you enjoyed this blog as well as i hope to see you soon in another blog 
+## Outro
 
-> References
+And that's all. Thank you all for reaching this far, and hope you enjoyed this blog as well as i hope to see you soon in another blog 
 
-### 1.graphql
+## References
+
+> graphql 
 
 [Setting up and Testing your first GraphQL API Tutorial (Part 1 of 3)](https://www.servicenow.com/community/now-platform-articles/setting-up-and-testing-your-first-graphql-api-tutorial-part-1-of/ta-p/2307775)
 
@@ -781,7 +660,7 @@ function handler({
 [GraphQL Overview - Learn Integrations on the Now Platform](https://www.youtube.com/watch?v=sP_CelE8GGI&list=PL3rNcyAiDYK0at2ypM6uhp_Mg6-gZlIdP&index=45)
 
 
-### 2. AMB 
+> AMB  
 
 
 [Docs](https://docs.servicenow.com/bundle/washingtondc-platform-administration/page/administer/platform-performance/concept/AMB-metrics.html)

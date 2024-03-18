@@ -137,125 +137,82 @@ back to our component , we install an http client in react called `axios` via th
 and insert the following code in `App.js` and the styles in `App.css`.
 
 ```jsx
-
-import React , {useState} from "react";
+import React, { useState } from "react";
 
 import { hot } from "react-hot-loader/root";
 
-import './App.css'
+import "./App.css";
 
-import axios from 'axios';
-
-  
-  
-  
+import axios from "axios";
 
 function App() {
+  const [token, setToken] = useState("");
 
-  const [token, setToken] = useState('');
+  const [message, setMessage] = useState("");
 
-  const [message, setMessage] = useState('');
+  const [currentApp, setCurrentApp] = useState("");
 
-  const [currentApp, setCurrentApp] = useState('');
+  const [isInteractive, setIsInteractive] = useState(false);
 
-  const [isInteractive, setIsInteractive] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const fetchData = async () => {
+    try {
+      const response = await axios.post(
+        "https://dev146231.service-now.com/api/x_982379_test_app/rpc",
+        {
+          // Add any request payload if needed
+        },
+        {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
 
-  
+            // Add any other headers as needed
+          },
+        },
+      );
 
-  const fetchData = async () => {
+      const { message: message_content, data } = response.data.result;
 
-    try {
+      setToken(data.token);
 
-      const response = await axios.post('https://dev146231.service-now.com/api/x_982379_test_app/rpc', {
+      setMessage(message_content);
 
-        // Add any request payload if needed
+      setCurrentApp(data.currentApp);
 
-      }  , {
+      setIsInteractive(data.isInteractive);
 
-  
+      setIsLoggedIn(data.isLoggedIn);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-        headers: {
+  return (
+    <div className="container">
+      <h1 className="header">ServiceNow Team is Awesome</h1>
 
-          'Access-Control-Allow-Origin': '*',
+      <div className="card">
+        <button onClick={fetchData}>Fetch Data</button>
 
-          // Add any other headers as needed
+        <div>
+          <h2>Token: {token}</h2>
 
-        }
+          <p>Message: {message}</p>
 
-  
-  
+          <p>Current App: {currentApp}</p>
 
-      });
+          <p>Is Interactive: {isInteractive.toString()}</p>
 
-      const { message : message_content , data } = response.data.result;
-
-  
-  
-  
-
-      setToken(data.token);
-
-      setMessage(message_content);
-
-      setCurrentApp(data.currentApp);
-
-      setIsInteractive(data.isInteractive);
-
-      setIsLoggedIn(data.isLoggedIn);
-
-  
-  
-
-    } catch (error) {
-
-      console.error('Error fetching data:', error);
-
-    }
-
-  };
-
-  
-
-  return (
-
-    <div className="container">
-
-            <h1 className="header">ServiceNow Team is Awesome</h1>
-
-  
-
-      <div className="card">
-
-        <button onClick={fetchData}>Fetch Data</button>
-
-        <div>
-
-          <h2>Token: {token}</h2>
-
-          <p>Message: {message}</p>
-
-          <p>Current App: {currentApp}</p>
-
-          <p>Is Interactive: {isInteractive.toString()}</p>
-
-          <p>Is Logged In: {isLoggedIn.toString()}</p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  );
-
+          <p>Is Logged In: {isLoggedIn.toString()}</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-  
-  
-
 export default hot(App);
+
 ```
 
 
@@ -320,102 +277,72 @@ now you might ask, where is this output structure defined, and it's a great ques
 the answer lies in the `postbuild.js`  nodejs script which as named , runs after the build command is finished, so let's take a look into it and pinpoint the important sections to us
 
 ```js
-
 function injectAuthLogic(inputHTML) {
+  const AUTH_LOGIC_CODE = `<!-- handle security token for API requests -->
 
-  const AUTH_LOGIC_CODE = `<!-- handle security token for API requests -->
+  <div style="display:none">
 
-  <div style="display:none">
+    <g:evaluate object="true">
 
-    <g:evaluate object="true">
+      var session = gs.getSession(); var token = session.getSessionToken(); if
 
-      var session = gs.getSession(); var token = session.getSessionToken(); if
+      (token=='' || token==undefined) token = gs.getSessionToken();
 
-      (token=='' || token==undefined) token = gs.getSessionToken();
+    </g:evaluate>
 
-    </g:evaluate>
+  </div>
 
-  </div>
+  <script>
 
-  <script>
+    window.servicenowUserToken = '$[token]'
 
-    window.servicenowUserToken = '$[token]'
+  </script>
 
-  </script>
+  <!-- handle security token for API requests -->
 
-  <!-- handle security token for API requests -->
+  `;
 
-  `
+  const headEndIndex = inputHTML.indexOf("</head");
 
-  
-
-  const headEndIndex = inputHTML.indexOf('</head')
-
-  
-
-  return (
-
-    inputHTML.substring(0, headEndIndex) +
-
-    AUTH_LOGIC_CODE +
-
-    inputHTML.substring(headEndIndex)
-
-  )
-
+  return (
+    inputHTML.substring(0, headEndIndex) +
+    AUTH_LOGIC_CODE +
+    inputHTML.substring(headEndIndex)
+  );
 }
-
-  
 
 function injectJellyDoctype(inputHTML) {
+  const DOCTYPE_JELLY = `<g:evaluate>
 
-  const DOCTYPE_JELLY = `<g:evaluate>
+      var docType = '&lt;!DOCTYPE HTML&gt;';
 
-      var docType = '&lt;!DOCTYPE HTML&gt;';
+  </g:evaluate>
 
-  </g:evaluate>
+  <g2:no_escape>
 
-  <g2:no_escape>
+      $[docType]
 
-      $[docType]
+  </g2:no_escape>
 
-  </g2:no_escape>
+    `;
 
-    `
+  const headIndex = inputHTML.indexOf("<head");
 
-  
-
-  const headIndex = inputHTML.indexOf('<head')
-
-  
-
-  return (
-
-    inputHTML.substring(0, headIndex) +
-
-    DOCTYPE_JELLY +
-
-    inputHTML.substring(headIndex)
-
-  )
-
+  return (
+    inputHTML.substring(0, headIndex) +
+    DOCTYPE_JELLY +
+    inputHTML.substring(headIndex)
+  );
 }
-
-  
 
 function removeHtmlTags(inputHTML) {
-
-  return inputHTML.replace(/(<html>)|(<html.+>)/, '').replace('</html>', '')
-
+  return inputHTML.replace(/(<html>)|(<html.+>)/, "").replace("</html>", "");
 }
-
-  
 
 function removeDocType(inputHTML) {
-
-  return inputHTML.replace('<!DOCTYPE html>', '')
-
+  return inputHTML.replace("<!DOCTYPE html>", "");
 }
+
 ```
 
 
