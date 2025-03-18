@@ -122,9 +122,9 @@ as seen in the above image, to establish a successful request , there are other 
 
 But about the cookies, how we get them?
 
-The answer to this question gets us back to a previous blog we wrote in our site here about using [Servicenow REST-API based Automation](https://prod-snow-wiki-9f8c680c23f2905ee2f89363bfbd4da83e3752f335141a01.gitlab.io/blog/hacks/hack1/) module to automate servicenow workflows, so you might want to review that blog if you didn't already before you proceed.
+The answer to this question gets us back to a previous blog we wrote in our site here about using [Servicenow REST-API based Automation](https://taknight-101.github.io/restapi-automation) module to automate servicenow workflows, so you might want to review that blog if you didn't already before you proceed.
 
-So as we said, we can construct a servicenow client object into which we store session and cookies information that we can easily retrieve for other use cases, and also we will use a utility from our previous blog titled [Utilities #1](https://prod-snow-wiki-9f8c680c23f2905ee2f89363bfbd4da83e3752f335141a01.gitlab.io/blog/utilities/1/) to get the sys*id of our target updateset which is named `Training and Certification Management` , \_I bet you know a little now about our awesome secret project ,but i bet you could keep up with us 😁*
+So as we said, we can construct a servicenow client object into which we store session and cookies information that we can easily retrieve for other use cases, and also we will use a utility from our previous blog titled [Utility Javascript Functions to Reuse in ServiceNow Development](https://taknight-101.github.io/u1) to get the sys*id of our target updateset which is named `Training and Certification Management` , \_I bet you know a little now about our awesome secret project ,but i bet you could keep up with us 😁*
 
 The following code does the mentioned job
 
