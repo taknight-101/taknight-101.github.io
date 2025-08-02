@@ -19,7 +19,7 @@ This devlog shares how I tackled the following three challenges:
 
 3. Maintaining development progress while safely testing the refactor live.
 
-## 1⃣ Challenge 1: Understanding a Huge Codebase in Little Time
+## Challenge 1: Understanding a Huge Codebase in Little Time
 
 My first move was to isolate the critical path of the business flow. Rather than trying to understand everything at once, I focused on the parts of the system that were essential for the business to function.
 
@@ -37,7 +37,7 @@ This allowed me to create a mental map of the flow, and to begin reasoning about
 
 ## 📘 A Quick Note on BPMN
 
-![]({{ site.baseurl }}/images/refactor/BPMN-1.png)
+<img src="{{ site.baseurl }}/images/refactor/BPMN-1.png" loading="lazy" alt="BPMN Flow Diagram"/>
 
 For those unfamiliar, BPMN (Business Process Model and Notation) is a standardized graphical notation for modeling business processes.
 
@@ -59,7 +59,7 @@ Using BPMN helped clearly distinguish:
 
 - It’s a powerful way to communicate complex flows between developers and domain experts, and it’s a valuable reference when restructuring business logic.
 
-## 2⃣ Challenge 2: Refactoring into a Reusable Pattern
+## Challenge 2: Refactoring into a Reusable Pattern
 
 ❌ The Problem with the Old Code
 
@@ -222,13 +222,13 @@ The result: a closed for modification, open for extension architecture that can 
 
 For example, when a new business requirement arises that introduces a new validation rule or processing step, a developer can simply implement a new component that conforms to the existing `Component<I, O, E>` interface. This component can then be plugged into the orchestration pipeline without modifying any of the existing components. Similarly, if a new integration system needs to be added, it can be registered as an isolated module and handled consistently through the same architecture, reducing the risk of regressions or side effects in already stable logic. Even if the new system doesn't conform to the `Component<I, O, E>` interface, a design pattern such as <a href="https://www.geeksforgeeks.org/system-design/adapter-pattern/" target="_blank">Adapter</a> can be employed within that module to bridge the external system's contract to the internal architecture — maintaining both cohesion and alignment with Domain-Driven Design principles.
 
-## 3⃣ Challenge 3: Parallel Refactor Without Breaking Existing Development
+## Challenge 3: Parallel Refactor Without Breaking Existing Development
 
 With other developers actively building features on the old flow, I couldn’t afford to disrupt ongoing work.
 
 The approach i took was inspired by a concept from **cloud-native deployments** — namely, <a href="https://martinfowler.com/bliki/CanaryRelease.html" target="_blank">canary releases</a> — where new versions of a service are deployed to a small subset of users or traffic before full rollout. I brought this principle into my code refactor: instead of replacing the old business flow outright, I ran the new implementation in parallel, allowing it to coexist while testing its correctness and adoption feasibility.
 
-![]({{ site.baseurl }}/images/refactor/canary.png)
+<img src="{{ site.baseurl }}/images/refactor/canary.png" loading="lazy" alt="BPMN Flow Diagram"/>
 
 So by using canary testing:
 
