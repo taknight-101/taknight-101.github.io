@@ -226,7 +226,7 @@ For example, when a new business requirement arises that introduces a new valida
 
 With other developers actively building features on the old flow, I couldn’t afford to disrupt ongoing work.
 
-This approach i took was inspired by a concept from **cloud-native deployments** — namely, <a href="https://martinfowler.com/bliki/CanaryRelease.html" target="_blank">canary releases</a> — where new versions of a service are deployed to a small subset of users or traffic before full rollout. I brought this principle into my code refactor: instead of replacing the old business flow outright, I ran the new implementation in parallel, allowing it to coexist while testing its correctness and adoption feasibility.
+The approach i took was inspired by a concept from **cloud-native deployments** — namely, <a href="https://martinfowler.com/bliki/CanaryRelease.html" target="_blank">canary releases</a> — where new versions of a service are deployed to a small subset of users or traffic before full rollout. I brought this principle into my code refactor: instead of replacing the old business flow outright, I ran the new implementation in parallel, allowing it to coexist while testing its correctness and adoption feasibility.
 
 ![]({{ site.baseurl }}/images/refactor/canary.png)
 
