@@ -101,7 +101,7 @@ Each business step became a clean, focused component implementing that contract.
 
 > <a href="https://www.geeksforgeeks.org/system-design/template-method-design-pattern/" target="_blank">Template Method pattern</a> applied via composition, not inheritance.
 
-Traditionally, the Template Method pattern is implemented using an abstract class with concrete subclasses overriding specific steps of an algorithm. However, I chose to use composition, which allowed more flexibility and modularity.
+Traditionally, the Template Method pattern is implemented using an abstract class with concrete subclasses overriding specific steps of an algorithm. However, The choice of choosing composition, allowed more flexibility and modularity for the use case at hand.
 
 Here's how It might be structured:
 
