@@ -116,55 +116,75 @@ public record OperationResult<O, E>(O output, E error, boolean success) {
     }
 }
 
-// Generic component interface
+// The generic Component interface
 public interface Component<I, O, E> {
     OperationResult<O, E> execute(I input);
 }
 
-// A reusable wrapper to orchestrate components with optional hooks
+// Template Method via composition
 public class ComponentRunner<I, O, E> {
-    private final Component<I, O, E> coreComponent;
+    private final Component<I, O, E> core;
     private final Runnable before;
     private final Runnable after;
 
-    public ComponentRunner(Component<I, O, E> coreComponent, Runnable before, Runnable after) {
-        this.coreComponent = coreComponent;
+    public ComponentRunner(Component<I, O, E> core, Runnable before, Runnable after) {
+        this.core = core;
         this.before = before;
         this.after = after;
     }
 
     public OperationResult<O, E> run(I input) {
         if (before != null) before.run();
-        OperationResult<O, E> result = coreComponent.execute(input);
+        OperationResult<O, E> result = core.execute(input);
+        if (!result.success()) return result; // short-circuit here
         if (after != null) after.run();
         return result;
     }
 }
 
-// Example usage
+// A parser component (example: string to int)
 Component<String, Integer, String> parser = input -> {
     try {
         return OperationResult.ok(Integer.parseInt(input));
     } catch (NumberFormatException e) {
-        return OperationResult.fail("Invalid number");
+        return OperationResult.fail("Invalid number: " + input);
     }
 };
 
-ComponentRunner<String, Integer, String> runner = new ComponentRunner<>(
+// Another component that doubles the number, but fails if zero
+Component<Integer, Integer, String> doubler = input -> {
+    if (input == 0) return OperationResult.fail("Zero not allowed");
+    return OperationResult.ok(input * 2);
+};
+
+// Compose the full pipeline
+ComponentRunner<String, Integer, String> parserRunner = new ComponentRunner<>(
     parser,
-    () -> System.out.println("[Before Execution]"),
-    () -> System.out.println("[After Execution]")
+    () -> System.out.println("Parsing input..."),
+    () -> System.out.println("Parsing done.")
 );
 
-// Execute the component and handle short-circuit logic
-OperationResult<Integer, String> result = runner.run("123");
+ComponentRunner<Integer, Integer, String> doubleRunner = new ComponentRunner<>(
+    doubler,
+    () -> System.out.println("Doubling value..."),
+    () -> System.out.println("Doubling done.")
+);
 
-if (!result.success()) {
-    System.out.println("Flow stopped due to error: " + result.error());
+// Execute the flow
+String raw = "123";
+var parsed = parserRunner.run(raw);
+if (!parsed.success()) {
+    System.out.println("Error: " + parsed.error());
     return;
 }
 
-System.out.println("Result: " + result.output());
+var doubled = doubleRunner.run(parsed.output());
+if (!doubled.success()) {
+    System.out.println("Error: " + doubled.error());
+    return;
+}
+
+System.out.println("Final result: " + doubled.output());
 
 ```
 
