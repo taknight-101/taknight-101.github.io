@@ -203,7 +203,7 @@ Component<String, Integer, String> parser = input -> {
 
 uses functional style in Java via a lambda expression.
 
-and that's because
+and that's because..
 
 ```java
 Component<String, Integer, String>
