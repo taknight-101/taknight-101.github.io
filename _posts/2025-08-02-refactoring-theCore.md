@@ -270,7 +270,7 @@ As Martin Fowler once said: _"If it hurts, do it more often."_ This experience p
 
 - Refactoring is as much about developer experience as it is about correctness.
 
-- Using DDD principles, generics, and pattern composition enabled a flexible, robust architecture.
+- Using DDD principles, generics, and software design patterns enabled a flexible, robust architecture.
 
 - Communication is everything: I kept the team in the loop and earned trust by proving value incrementally.
 
