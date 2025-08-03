@@ -274,6 +274,16 @@ As Martin Fowler once said: _"If it hurts, do it more often."_ This experience p
 
 - Communication is everything: I kept the team in the loop and earned trust by proving value incrementally.
 
+- Automated testing was key:
+
+  - Unit tests gave me fast feedback while evolving each component.
+
+  - Integration tests ensured full flow compatibility and correctness.
+
+  - Without test coverage, safe refactorings like this would not have been possible.
+
+  - Adopting a test-first mindset not only caught regressions early but helped validate design decisions before they became live.
+
 ## Conclusion
 
 If you find yourself in a similar situation, remember:
