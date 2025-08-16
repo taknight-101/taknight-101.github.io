@@ -43,7 +43,7 @@ In the Java ecosystem, libraries like `Resilience4j` provide out-of-the-box impl
 
 In the Go ecosystem, developers often use lightweight, composable libraries that embrace Go’s idioms:
 
-- go-resilience – implements common patterns like circuit breakers, timeouts, and retries.
+- go-resiliency – implements common patterns like circuit breakers, timeouts, and retries.
 
 - sony/gobreaker – a popular circuit breaker implementation.
 
