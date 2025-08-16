@@ -27,7 +27,7 @@ and similar platforms). These solutions focus on externalizing resilience: offlo
 > </a> — not only discussing the `Restate` product, but also framing the problem domain of application-driven resiliency and why it matters at scale. Highly recommended to watch before moving on: <a href="https://www.youtube.com/watch?v=nKio-9e0Cfg" target="_blank">A Gentle Introduction To Restate
 > </a>
 
-To handle this unpredictability, the industry has developed resilience patterns, now widely used in microservice ecosystems such as:
+To handle this unpredictability, the industry has developed resiliency patterns, now widely used in microservice ecosystems such as:
 
 - Timeouts – Stop waiting endlessly for a dependency and fail fast.
 
@@ -52,7 +52,7 @@ In the Go ecosystem, developers often use lightweight, composable libraries that
 ![Failure is the default in distributed systems]({{ site.baseurl }}/images/go-errors/errors1.png)
 _Illustrates normal-looking requests devolving into timeouts, transient 5xx, retries, and circuit breaking—why resilience must be incorporated in your application design._
 
-These resilience patterns are not language-specific—they are universal needs in distributed systems. But Go’s simplicity and explicit error handling make adopting them feel natural, predictable, and composable. That’s why it’s such a strong candidate for building resilient distributed applications at scale.
+These resiliency patterns are not language-specific—they are universal needs in distributed systems. But Go’s simplicity and explicit error handling make adopting them feel natural, predictable, and composable. That’s why it’s such a strong candidate for building resilient distributed applications at scale.
 
 So beyond external products, the language you use to build distributed systems also plays a key role. And that's why in this blog i want to focus specifically on Go and why it shines in this regard.
 
