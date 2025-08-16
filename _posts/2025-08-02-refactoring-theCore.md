@@ -101,7 +101,15 @@ Each business step became a clean, focused component implementing that contract.
 
 > <a href="https://www.geeksforgeeks.org/system-design/template-method-design-pattern/" target="_blank">Template Method pattern</a> applied via composition, not inheritance.
 
-Traditionally, the Template Method pattern is implemented using an abstract class with concrete subclasses overriding specific steps of an algorithm. However, The choice of choosing composition, allowed more flexibility and modularity for the use case at hand.
+Traditionally, the Template Method pattern is implemented through an abstract class, with concrete subclasses overriding specific steps of the algorithm. In this case, however, opting for composition over inheritance provided greater flexibility and modularity for the problem at hand.
+
+The decision to use composition was driven by two main factors:
+
+- The need to manage errors explicitly as values.
+
+- The desire to leverage Spring’s dependency management more effectively.
+
+An added benefit is that the resulting design is simpler and easier to reason about.
 
 Here's how It might be structured:
 
