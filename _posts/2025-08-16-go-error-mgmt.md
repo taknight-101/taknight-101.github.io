@@ -24,7 +24,7 @@ Resilience is therefore not an afterthought—it is the very foundation of a sys
 and similar platforms). These solutions focus on externalizing resilience: offloading complexity away from your business logic into proven, cost-effective layers that keep your system available and stable even under stress.
 
 > This is an excellent introductory video by <a href="https://www.youtube.com/@asoli_dev" target="_blank">Ahmed Farghal
-> </a> — not only discussing the product, but also framing the problem domain of application-driven resiliency and why it matters at scale. Highly recommended to watch before moving on: <a href="https://www.youtube.com/watch?v=nKio-9e0Cfg" target="_blank">A Gentle Introduction To Restate
+> </a> — not only discussing the `Restate` product, but also framing the problem domain of application-driven resiliency and why it matters at scale. Highly recommended to watch before moving on: <a href="https://www.youtube.com/watch?v=nKio-9e0Cfg" target="_blank">A Gentle Introduction To Restate
 > </a>
 
 To handle this unpredictability, the industry has developed resilience patterns, now widely used in microservice ecosystems such as:
