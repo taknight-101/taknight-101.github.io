@@ -41,11 +41,11 @@ This allowed me to create a mental map of the flow, and to begin reasoning about
 
 For those unfamiliar, BPMN (Business Process Model and Notation) is a standardized graphical notation for modeling business processes.
 
-Events (circles) represent something that happens (start, end, or intermediate).
+- Events (circles) represent something that happens (start, end, or intermediate).
 
-Tasks (rectangles) represent units of work.
+- Tasks (rectangles) represent units of work.
 
-Gateways (diamonds) handle decisions or forks in the flow.
+- Gateways (diamonds) handle decisions or forks in the flow.
 
 This is a great <a href="https://app.crismo.io/" target="_blank">tool</a> to use if you want to create your own BPMN diagrams.
 
