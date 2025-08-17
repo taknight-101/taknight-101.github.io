@@ -35,7 +35,7 @@ Using BPMN diagrams and call traces, I identified:
 
 This allowed me to create a mental map of the flow, and to begin reasoning about refactoring without needing to detangle the entire system upfront.
 
-## 📘 A Quick Note on BPMN
+## A Quick Note on BPMN
 
 ![BPMN Flow Diagram]({{ site.baseurl }}/images/refactor/BPMN-1.png)
 
