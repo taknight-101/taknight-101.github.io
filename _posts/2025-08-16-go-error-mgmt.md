@@ -20,8 +20,9 @@ image: /images/go-errors/go-errors.jpg
 
 Distributed applications are designed to fail in surprising ways. When you’re working with hundreds of microservices handling millions of requests daily, failures aren’t a possibility—they’re inevitable. Network partitions, timeouts, retries, race conditions, and cascading errors all surface unexpectedly.
 
-Resilience is therefore not an afterthought—it is the very foundation of a system’s survival. Companies have recognized this so deeply that entire businesses exist around application-driven resilience (e.g., `Restate`
-and similar platforms). These solutions focus on externalizing resilience: offloading complexity away from your business logic into proven, cost-effective layers that keep your system available and stable even under stress.
+Resilience and the idea of <a href="https://restate.dev/what-is-durable-execution/" target="_blank"> Durable Execution
+</a> is therefore not an afterthought. It is the very foundation of a system’s survival. Companies have recognized this so deeply that entire businesses exist around application-driven resilience (e.g., `Restate`
+and similar platforms). These solutions focus on externalizing resilience, namely offloading complexity away from your business logic into proven, cost-effective layers that keep your system available and stable even under stress.
 
 > This is an excellent introductory video by <a href="https://www.youtube.com/@asoli_dev" target="_blank">Ahmed Farghal
 > </a> — not only discussing the `Restate` product, but also framing the problem domain of application-driven resiliency and why it matters at scale. Highly recommended to watch before moving on: <a href="https://www.youtube.com/watch?v=nKio-9e0Cfg" target="_blank">A Gentle Introduction To Restate
